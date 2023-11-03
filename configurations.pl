@@ -39,7 +39,7 @@ flugelrad:-
 
 % menu/0
 % Main menu
-menu:-  
+menu :-  
   write('\nPlease select game mode:\n'),
   write('1 - Human  vs  Human\n'),
   write('2 - Human  vs  Bot\n'),
@@ -72,7 +72,9 @@ choose_player(Player):-
 set_mode(Player) :-
   menu,
   get_option(1, 3, 'Mode', Option), !,
-  option(Option, Player).
+  option(Option, Player),
+  write('\nPress ENTER to start!\n'),
+  get_char(_).
 
 configurations([Board, Player]) :-
   flugelrad,
