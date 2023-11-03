@@ -1,24 +1,6 @@
 :- consult(data).
 :- consult(utils).
 
-% display_board(+Board)
-% Displays the board
-display_board :-
-  display_white_space(11),
-  display_bar(1),
-  display_white_space(7),
-  display_bar(1),
-  display_white_space(11),
-  nl,
-  display_white_space(10),
-  write('/'),
-  display_white_space(9),
-  write('\\'),
-  display_white_space(5),
-  write('/'),
-  display_white_space(9),
-  write('\\'),
-  display_white_space(10).
 /*
   text("           o-------o       o-------o           "),
   text("          /         \     /         \          "),

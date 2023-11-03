@@ -7,24 +7,23 @@
 clear_console:- 
   write('\33\[2J'). 
 
-display_game(GameState-Player) :-
+display_game([Board|Player]) :-
   clear_console,
-  board_state(Board),
   display_board(Board).
 
-game_cycle(GameState-Player):-
-  game_over(GameState, Winner), !,
-  congratulate(Winner).
+%game_cycle(GameState):-
+    %game_over(GameState, Winner), !,
+    %display_game(GameState),
+    %show_winner(GameState, Winner).
 
-game_cycle(GameState-Player):-
-  choose_move(GameState, Player, Move),
-  move(GameState, Move, NewGameState),
-  next_player(Player, NextPlayer),
-  display_game(NewGameState-NextPlayer), !,
-  game_cycle(NewGameState-NextPlayer).
+game_cycle(GameState):-
+    display_game(GameState).
+    %print_turn(GameState),
+    %choose_move(GameState, Move),
+    %move(GameState, Move, NewGameState), !,
+    %game_cycle(NewGameState).
 
 play :-
   clear_console,
-  configurations(GameState), !.
-  /*display_game(GameState-Player),
-  game_cycle(GameState-Player).*/
+  configurations(GameState),
+  game_cycle(GameState).
