@@ -4,17 +4,17 @@
 :- consult(data).
 
 option(1):-
-  write('Human vs Human\n'),
+  write('\nHuman vs Human\n\n'),
   get_name(player_1), get_name(player_2).
 
 option(2):-
-  write('Human vs Bot\n'),
+  write('\nHuman vs Bot\n\n'),
   get_name(player_1),
   asserta((name_of(player_2, 'Bot'))), !, 
   choose_difficulty(player_2).
 
 option(3):-
-  write('Bot vs Bot\n'),
+  write('\nBot vs Bot\n\n'),
   asserta((name_of(player_1, 'Bot_1'))),
   asserta((name_of(player_2, 'Bot_2'))), !,
   choose_difficulty(player_1),
@@ -25,20 +25,20 @@ option(3):-
 flugelrad:-
   write('=====================\n'),
   write('Welcome to Flugelrad!\n'),
-  write('=====================\n').
+  write('=====================\n\n').
 
 % menu/0
 % Main menu
 menu:-  
-  write('Please select game mode:\n'),
+  write('\nPlease select game mode:\n'),
   write('1 - Human  vs  Human\n'),
   write('2 - Human  vs  Bot\n'),
-  write('3 - Bot    vs  Bot\n').
+  write('3 - Bot    vs  Bot\n\n').
 
 choose_player(Player):-
   name_of(player_1, Name1),
   name_of(player_2, Name2),
-  format('~a starts first!\n', [Name1]),
+  format('\n~a starts first!\n', [Name1]),
   format('~a starts second!\n', [Name2]),
   Player = player_1.
 

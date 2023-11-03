@@ -5,7 +5,7 @@ init_random_state :-
   setrand(X).
 
 choose_difficulty(Bot) :-
-  format('Please select ~a status:\n', [Bot]),
+  format('\nPlease select ~a difficulty:\n', [Bot]),
   write('1 - Easy\n'),
   write('2 - Hard\n'),
   get_option(1, 2, 'Difficulty', Option), !,

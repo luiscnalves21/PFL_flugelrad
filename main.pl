@@ -23,7 +23,8 @@ game_cycle(GameState-Player):-
   display_game(NewGameState-NextPlayer), !,
   game_cycle(NewGameState-NextPlayer).
 
-play_game :-
+play :-
+  clear_console,
   configurations(GameState), !.
   /*display_game(GameState-Player),
   game_cycle(GameState-Player).*/
