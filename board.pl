@@ -1,4 +1,5 @@
 :- consult(data).
+:- consult(utils).
 
 % display_board(+Board)
 % Displays the board

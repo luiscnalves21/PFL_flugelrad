@@ -1,3 +1,7 @@
+:- dynamic name_of/2.
+
+:- dynamic difficulty/2.
+
 % board(+Matrix)
 % Matrix is a 7x13 matrix representing the board.
 board_state([
@@ -18,8 +22,8 @@ board_state([
 
 % other_player(+CurrentPlayer, -NextPlayer)
 % Changes the current player to the next player.
-other_player(player1, player2).
-other_player(player2, player1).
+other_player(player_1, player_2).
+other_player(player_2, player_1).
 
 % symbol(+Player, -Symbol)
 % Translates the pieces to symbols.
