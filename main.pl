@@ -7,7 +7,7 @@
 clear_console:- 
   write('\33\[2J'). 
 
-display_game([Board|Player]) :-
+display_game([Board|_]) :-
   clear_console,
   display_board(Board).
 
@@ -17,11 +17,11 @@ display_game([Board|Player]) :-
     %show_winner(GameState, Winner).
 
 game_cycle(GameState):-
-    display_game(GameState).
-    %print_turn(GameState),
-    %choose_move(GameState, Move),
-    %move(GameState, Move, NewGameState), !,
-    %game_cycle(NewGameState).
+    display_game(GameState),
+    print_turn(GameState),
+    choose_move(GameState, Move),
+    move(GameState, Move, NewGameState), !,
+    game_cycle(NewGameState).
 
 play :-
   clear_console,

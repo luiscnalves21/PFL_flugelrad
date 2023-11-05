@@ -23,46 +23,12 @@
   text("           o-------o       o-------o           ").
 */
 
-% display_white_space(+Size)
-% Displays the white space with the given size
-display_white_space(0) :- !.
-display_white_space(N) :-
-  write(' '),
-  N1 is N - 1,
-  display_white_space(N1).
-
-% display_bar(+Size)
-% Displays the pattern 'o-------' with the given size
-display_bar(0) :-
-  write('o'), !.
-
-display_bar(N) :-
-  write('o-------'),
-  N1 is N - 1,
-  display_bar(N1).
-
-display_pieces(_, _, Col, RowSize, ColSize) :-
-  Col > ColSize, !.
-
-display_pieces(Board, Line, Col, RowSize, ColSize) :-
-  get_symbol(Board, Line, Col, Symbol),
-  format('~a', [Symbol]),
-  NC is Col + 1,
-  display_pieces(Board, Line, NC, RowSize, ColSize).
-
-% display_column_header(+Min, +Max)
-% Displays the column header with the given min and max
-display_column_header(Min, Max) :-
-  format('~d', [Min]),
-  Min1 is Min + 1,
-  Min1 =< Max,
-  display_column_header(Min1, Max).
-
 display_row([]) :-
   write('\n').
 
 display_row([H|T]) :-
-  symbol(H, S),
+  vertice(H, V, _),
+  symbol(V, S),
   write(S),
   display_row(T).
 
@@ -73,6 +39,7 @@ display_rows([Line|Rem]) :-
   display_rows(Rem).
 
 display_board(Board) :-
-  display_rows(Board).
-
-
+  display_rows(Board),
+  write('\nB - Blue\n'),
+  write('G - Green\n'),
+  write('E - Empty\n').

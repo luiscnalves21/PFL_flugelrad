@@ -60,12 +60,55 @@ choose_color :-
   format('\n~a, you are the ~a marbles!\n', [Name1, Color1]),
   format('~a, you are the ~a marbles!\n', [Name2, Color2]).
 
-choose_player(Player):-
+choose_player(Player) :-
   color_of(player_1, Color1),
-  color_of(player_2, Color2),
-  (Color1 = blue -> Player = player_1; Player = player_2),
+  (Color1 = b -> Player = player_1; Player = player_2),
   name_of(Player, Name1),
   format('\n~a starts first!\n', [Name1]).
+
+choose_move([_, Player], [Hexagon, Rotation]) :-
+  write('\nChoose an hexagon to play: \n'),
+  get_option(1, 7, 'Hexagon', Hexagon), !,
+  write('How many times do you want to rotate it? \n'),
+  get_option(1, 5, 'Rotation', Rotation), !.
+
+move([Board, Player], [Hexagon, Rotation], NewGameState) :-
+  hexagon(Hexagon, Vertices),
+  rotate_vertices(Vertices, Rotation),
+  other_player(Player, NewPlayer),
+  hexagon(Hexagon, NewVertices),
+  board(NewBoard),
+  NewGameState = [NewBoard, NewPlayer].
+
+last_vertice([X], X) :- !.
+
+last_vertice([_|T], X) :-
+  last_vertice(T, X).
+
+rotate_vertices(_, 0) :- !.
+
+rotate_vertices(Vertices, Rotation) :-
+  Rotation1 is Rotation - 1,
+  [H|T] = Vertices,
+  vertice(H, V, N),
+  last_vertice(Vertices, Last),
+  vertice(Last, NewValue, _),
+  asserta((vertice(H, NewValue, N))),
+  rotate_hexagon(V, T),
+  rotate_vertices(Vertices, Rotation1).
+
+rotate_hexagon(_, []) :- !.
+
+rotate_hexagon(S, [H|T]) :-
+  vertice(H, V, N),
+  asserta((vertice(H, S, N))),
+  rotate_hexagon(V, T).
+
+% print_turn(+GameState)
+% Prints a message declaring whose turn it is
+print_turn([_, Player]):-
+  name_of(Player, Name),
+  format('\n~a, is your turn!\n', [Name]), !.
 
 % set_mode/1
 % Game mode choice

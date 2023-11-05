@@ -1,25 +1,38 @@
 :- dynamic name_of/2.
 :- dynamic color_of/2.
 :- dynamic difficulty/2.
+:- dynamic vertice/3.
 
 % board(+Matrix)
 % Matrix is a 7x13 matrix representing the board.
 board([
-  [n, n, n, n, n,  n, b, d, d,  d, g, n, n,  n, b, d, d,   d, g],
-  [n, n, n, n, n,  r, n, n, n,  n, n, l, n,  r, n, n, n,   n, n, l],
-  [n, n, n, n, g,  n, n, n, fi, n, n, n, e,  n, n, n, se,  n, n, n, b],
-  [n, n, n, n, n,  l, n, n, n,  n, n, r, n,  l, n, n, n,   n, n, r],
-  [n, n, b, d, d,  d, e, d, d,  d, e, d, d,  d, e, d, d,   d, e, d, d, d, g],
-  [n, r, n, n, n,  n, n, l, n,  r, n, n, n,  n, n, l, n,   r, n, n, n, n, n, l],
-  [g, n, n, n, th, n, n, n, e,  n, n, n, fo, n, n, n, e,   n, n, n, fif, n, n,  n, b],
-  [n, l, n, n, n,  n, n, r, n,  l, n, n, n,  n, n, r, n,   l, n, n, n, n, n, r],
-  [n, n, b, d, d,  d, e, d, d,  d, e, d, d,  d, e, d, d,   d, e, d, d, d, g],
-  [n, n, n, n, n,  r, n, n, n,  n, n, l, n,  r, n, n, n,   n, n, l],
-  [n, n, n, n, g,  n, n, n, si, n, n, n, e,  n, n, n, sev, n, n, n, b],
-  [n, n, n, n, n,  l, n, n, n,  n, n, r, n,  l, n, n, n,   n, n, r],
-  [n, n, n, n, n,  n, b, d, d,  d, g, n, n,  n, b, d, d,   d, g]
+  [n, n, n, n, n,   n, 1, d, d,  d, 2, n, n,  n, 3, d, d,   d, 4],
+  [n, n, n, n, n,   r, n, n, n,  n, n, l, n,  r, n, n, n,   n, n, l],
+  [n, n, n, n, 5,   n, n, n, fi, n, n, n, 6,  n, n, n, se,  n, n, n, 7],
+  [n, n, n, n, n,   l, n, n, n,  n, n, r, n,  l, n, n, n,   n, n, r],
+  [n, n, 8, d, d,   d, 9, d, d,  d, 10, d, d, d, 11, d, d,  d, 12, d, d, d, 13],
+  [n, r, n, n, n,   n, n, l, n,  r, n, n, n,  n, n, l, n,   r, n, n, n, n, n, l],
+  [14, n, n, n, th, n, n, n, 15, n, n, n, fo, n, n, n, 16,  n, n, n, fif, n, n,  n, 17],
+  [n, l, n, n, n,   n, n, r, n,  l, n, n, n,  n, n, r, n,   l, n, n, n, n, n, r],
+  [n, n, 18, d, d,  d, 19, d, d, d, 20, d, d, d, 21, d, d,  d, 22, d, d, d, 23],
+  [n, n, n, n, n,   r, n, n, n,  n, n, l, n,  r, n, n, n,   n, n, l],
+  [n, n, n, n, 24,  n, n, n, si, n, n, n, 25, n, n, n, sev, n, n, n, 26],
+  [n, n, n, n, n,   l, n, n, n,  n, n, r, n,  l, n, n, n,   n, n, r],
+  [n, n, n, n, n,   n, 27, d, d, d, 28, n, n, n, 29, d, d,  d, 30]
 ]).
 
+vertice(n, n, []).
+vertice(d, d, []).
+vertice(r, r, []).
+vertice(l, l, []).
+vertice(e, e, []).
+vertice(fi, fi, []).
+vertice(se, se, []).
+vertice(th, th, []).
+vertice(fo, fo, []).
+vertice(fif, fif, []).
+vertice(si, si, []).
+vertice(sev, sev, []).
 vertice(1, b, [2, 5]).
 vertice(2, g, [1, 6]).
 vertice(3, b, [4, 6]).
