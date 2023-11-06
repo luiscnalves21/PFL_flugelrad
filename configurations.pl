@@ -1,5 +1,6 @@
 :- use_module(library(between)).
 :- use_module(library(system), [now/1]).
+:- use_module(library(lists)).
 :- consult(utils).
 :- consult(data).
 
@@ -63,12 +64,26 @@ choose_player(Player) :-
   name_of(Player, Name1),
   format('\n~a starts first!\n', [Name1]).
 
-choose_move(_, [Hexagon, Rotation]) :-
+choose_move([Hexagon, Rotation], 1) :-
   last_move(LastHexagon),
   (LastHexagon = 0 -> write('\nChoose a hexagon to play: \n'); format('\nChoose a hexagon to play except ~d: \n', LastHexagon)),
   get_option(1, 7, 'Hexagon', Hexagon), !,
   write('How many times do you want to rotate it? \n'),
   get_option(1, 5, 'Rotation', Rotation), !,
+  validate_move(Hexagon), !.
+
+choose_move([Hexagon, Rotation], 2) :-
+  ValidHexagonMoves = [1, 2, 3, 4, 5, 6, 7],
+  ValidRotationMoves = [1, 2, 3, 4, 5],
+  random(0, 7, HexagonIndex),
+  nth0(HexagonIndex, ValidHexagonMoves, Hexagon),
+  random(0, 5, RotationIndex),
+  nth0(RotationIndex, ValidRotationMoves, Rotation),
+  last_move(LastHexagon),
+  (LastHexagon = 0 -> write('\nChoose a hexagon to play: \n'); format('\nChoose a hexagon to play except ~d: \n', LastHexagon)),
+  format('Hexagon between 1 and 7: ~d\n', Hexagon),
+  write('How many times do you want to rotate it? \n'),
+  format('Rotation between 1 and 5: ~d\n', Rotation),
   validate_move(Hexagon), !.
 
 move([_, Player], [Hexagon, Rotation], NewGameState) :-
@@ -171,17 +186,22 @@ game_over(Winner) :-
   dfs_vertices(30, player_2, Winner).
 
 display_game([Board|_]) :-
-  clear_console,
+  %clear_console,
   display_board(Board).
 
 show_winner(Winner) :-
   name_of(Winner, Name),
   format('\nThe winner is ~a!\n', [Name]), !.
 
+playerType([_, Player], PlayerType) :-
+  name_of(Player, Name),
+  (Name = 'Bot' -> PlayerType = 2; PlayerType = 1).
+
 game_cycle(GameState) :-
   display_game(GameState),
   print_turn(GameState),
-  choose_move(GameState, Move),
+  playerType(GameState, PlayerType),
+  choose_move(Move, PlayerType),
   valid_move(Valid),
   (Valid = 1 -> move(GameState, Move, NewGameState), !; NewGameState = GameState),
   game_over(Winner),
@@ -201,4 +221,5 @@ configurations([Board, Player]) :-
   flugelrad,
   set_mode(Player),
   init_random_state,
+  assertall,
   board(Board).

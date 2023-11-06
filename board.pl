@@ -40,7 +40,6 @@ display_rows([Line|Rem]) :-
 
 display_board(Board) :-
   nl,
-  assertall,
   display_rows(Board),
   write('\nB - Blue\n'),
   write('G - Green\n'),
