@@ -4,6 +4,8 @@
 :- consult(utils).
 :- consult(data).
 
+% option(+Option, -Player)
+% Chooses the game mode
 option(1, Player):-
   write('\nHuman vs Human\n\n'),
   get_name(player_1), get_name(player_2),
@@ -43,6 +45,8 @@ menu :-
   write('2 - Human  vs  Bot\n'),
   write('3 - Bot    vs  Bot\n\n').
 
+% choose_color/0
+% Chooses the color of the marbles
 choose_color :-
   name_of(player_1, Name1),
   name_of(player_2, Name2),
@@ -58,12 +62,16 @@ choose_color :-
   format('\n~a, you are the ~a marbles!\n', [Name1, Color1]),
   format('~a, you are the ~a marbles!\n', [Name2, Color2]).
 
+% choose_player(-Player)
+% Chooses the player that starts first
 choose_player(Player) :-
   color_of(player_1, Color1),
   (Color1 = b -> Player = player_1; Player = player_2),
   name_of(Player, Name1),
   format('\n~a starts first!\n', [Name1]).
 
+% choose_move(-Move, +PlayerType)
+% Chooses the move to be made based on the player type
 choose_move([Hexagon, Rotation], 1) :-
   last_move(LastHexagon),
   (LastHexagon = 0 -> write('\nChoose a hexagon to play: \n'); format('\nChoose a hexagon to play except ~d: \n', LastHexagon)),
@@ -86,6 +94,8 @@ choose_move([Hexagon, Rotation], 2) :-
   format('Rotation between 1 and 5: ~d\n', Rotation),
   validate_move(Hexagon), !.
 
+% move(+GameState, +Move, -NewGameState)
+% Makes a move (rotates a hexagon)
 move([_, Player], [Hexagon, Rotation], NewGameState) :-
   hexagon(Hexagon, Vertices),
   rotate_vertices(Vertices, Rotation),
@@ -93,17 +103,21 @@ move([_, Player], [Hexagon, Rotation], NewGameState) :-
   board(NewBoard),
   NewGameState = [NewBoard, NewPlayer].
 
+% validate_move(+Hexagon)
+% Validates if the move is valid
 validate_move(Hexagon) :-
   last_move(LastHexagon),
   (Hexagon = LastHexagon -> asserta(valid_move(0)); asserta(last_move(Hexagon)), asserta(valid_move(1))).
 
+% last_vertice(+Vertices, -Last)
+% Gets the last vertice of a hexagon
 last_vertice([X], X) :- !.
-
 last_vertice([_|T], X) :-
   last_vertice(T, X).
 
+% rotate_vertices(+Vertices, +Rotation)
+% Rotates the vertices of a hexagon
 rotate_vertices(_, 0) :- !.
-
 rotate_vertices(Vertices, Rotation) :-
   Rotation1 is Rotation - 1,
   [H|T] = Vertices,
@@ -114,8 +128,9 @@ rotate_vertices(Vertices, Rotation) :-
   rotate_hexagon(V, T),
   rotate_vertices(Vertices, Rotation1).
 
+% rotate_hexagon(+Value, +Vertices)
+% Rotates a hexagon changing the value of its vertices
 rotate_hexagon(_, []) :- !.
-
 rotate_hexagon(S, [H|T]) :-
   vertice(H, V, N, Visited),
   asserta((vertice(H, S, N, Visited))),
@@ -129,10 +144,11 @@ print_turn([_, Player]):-
   valid_move(Valid),
   (Valid = 0 -> write('\nA hexagon can\'t be played twice in a row!\n'); true), !.
 
+% dfs(+N, +Player)
+% Depth-first search algorithm
 dfs(N, _) :-
   vertice(N, _, _, Visited),
   Visited = true, !.
-
 dfs(N, Player) :-
   vertice(N, Value, Adjacent, _),
   retract((vertice(N, _, _, _))),
@@ -144,19 +160,21 @@ dfs(N, Player) :-
     asserta(counter(Player, NewCounter)), dfs_adjacent(Adjacent, Player), !; !
   ).
 
+% dfs_adjacent(+Adjacent, +Player)
+% Depth-first search algorithm for the adjacent vertices
 dfs_adjacent([], _) :- !.
-
 dfs_adjacent([H|T], Player) :-
   dfs(H, Player),
   dfs_adjacent(T, Player).
 
+% dfs_vertices(+N, +Player, -Winner)
+% Depth-first search algorithm for the vertices (Main algorithm)
 dfs_vertices(0, Player, Winner) :- 
   counter(Player, Counter),
   (Counter >= 6 -> Winner = Player, asserta(game_over_bool(1)), !;
   retract(counter(Player, _)),
   asserta(counter(Player, 0))
   ), !.
-
 dfs_vertices(N, Player, Winner) :-
   counter(Player, Counter),
   (Counter >= 6 -> Winner = Player, asserta(game_over_bool(1)), !; 
@@ -172,8 +190,9 @@ dfs_vertices(N, Player, Winner) :-
   ),
   !.
 
+% setNotVisited(+N)
+% Sets all the vertices to not visited
 setNotVisited(0) :- !.
-
 setNotVisited(N) :-
   vertice(N, V, A, _),
   retract((vertice(N, _, _, _))),
@@ -181,22 +200,32 @@ setNotVisited(N) :-
   N1 is N - 1,
   setNotVisited(N1).
 
+% game_over(+Winner)
+% Checks if the game is over
 game_over(Winner) :-
   dfs_vertices(30, player_1, Winner),
   dfs_vertices(30, player_2, Winner).
 
+% display_game(+GameState)
+% Displays the game
 display_game([Board|_]) :-
   clear_console,
   display_board(Board).
 
+% show_winner(+Winner)
+% Displays the winner's name
 show_winner(Winner) :-
   name_of(Winner, Name),
   format('\nThe winner is ~a!\n', [Name]), !.
 
+% playerType(+GameState, -PlayerType)
+% Gets the player type
 playerType([_, Player], PlayerType) :-
   name_of(Player, Name),
   (Name = 'Bot' -> PlayerType = 2; (Name = 'Bot_1' -> PlayerType = 2; (Name = 'Bot_2' -> PlayerType = 3; PlayerType = 1))).
 
+% game_cycle(+GameState)
+% Main game cycle
 game_cycle(GameState) :-
   display_game(GameState),
   print_turn(GameState),
@@ -208,8 +237,8 @@ game_cycle(GameState) :-
   game_over_bool(IsOver),
   (IsOver = 1 -> display_game(GameState), show_winner(Winner), !; game_cycle(NewGameState)), !.
 
-% set_mode/1
-% Game mode choice
+% set_mode(-Player)
+% Sets the game mode
 set_mode(Player) :-
   menu,
   get_option(1, 3, 'Mode', Option), !,
@@ -217,6 +246,8 @@ set_mode(Player) :-
   write('\nPress ENTER to start!\n'),
   get_char(_).
 
+% configurations(+GameState)
+% Sets the game configurations (board and player)
 configurations([Board, Player]) :-
   flugelrad,
   set_mode(Player),

@@ -7,7 +7,7 @@
 :- dynamic game_over_bool/1.
 
 % board(+Matrix)
-% Matrix is a 7x13 matrix representing the board.
+% The board is represented by a matrix.
 board([
   [n, n, n, n, n,   n, 1, d, d,  d, 2, n, n,  n, 3, d, d,   d, 4],
   [n, n, n, n, n,   r, n, n, n,  n, n, l, n,  r, n, n, n,   n, n, l],
@@ -23,6 +23,9 @@ board([
   [n, n, n, n, n,   l, n, n, n,  n, n, r, n,  l, n, n, n,   n, n, r],
   [n, n, n, n, n,   n, 27, d, d, d, 28, n, n, n, 29, d, d,  d, 30]
 ]).
+
+% assertall/0
+% Asserts all the vertices of the board and other initial values.
 assertall :-
   asserta(vertice(n, n, [], false)),
   asserta(vertice(d, d, [], false)),
@@ -72,6 +75,7 @@ assertall :-
   asserta(counter(player_2, 0)),
   asserta(game_over_bool(0)).
 
+% hexagon(+Hexagon, +Vertices)
 hexagon(1, [1, 2, 6, 10, 9, 5]).
 hexagon(2, [3, 4, 7, 12, 11, 6]).
 hexagon(3, [8, 9, 15, 19, 18, 14]).
@@ -103,8 +107,12 @@ symbol(fif, '5').
 symbol(si, '6').
 symbol(sev, '7').
 
+% color(-Color, +Number)
+% Translates the colors to numbers.
 color(b, 1).
 color(g, 2).
 
+% other_color(+Color, -OtherColor)
+% Changes the current color to the other color.
 other_color(1, 2).
 other_color(2, 1).

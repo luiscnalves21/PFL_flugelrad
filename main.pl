@@ -2,6 +2,8 @@
 :- consult(configurations).
 :- consult(board).
 
+% play/0
+% Predicate to start and play the game
 play :-
   clear_console,
   configurations(GameState),
