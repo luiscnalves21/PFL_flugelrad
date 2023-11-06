@@ -186,7 +186,7 @@ game_over(Winner) :-
   dfs_vertices(30, player_2, Winner).
 
 display_game([Board|_]) :-
-  %clear_console,
+  clear_console,
   display_board(Board).
 
 show_winner(Winner) :-
@@ -195,7 +195,7 @@ show_winner(Winner) :-
 
 playerType([_, Player], PlayerType) :-
   name_of(Player, Name),
-  (Name = 'Bot' -> PlayerType = 2; PlayerType = 1).
+  (Name = 'Bot' -> PlayerType = 2; (Name = 'Bot_1' -> PlayerType = 2; (Name = 'Bot_2' -> PlayerType = 3; PlayerType = 1))).
 
 game_cycle(GameState) :-
   display_game(GameState),
