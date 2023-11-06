@@ -20,7 +20,8 @@ game_cycle(GameState):-
     display_game(GameState),
     print_turn(GameState),
     choose_move(GameState, Move),
-    move(GameState, Move, NewGameState), !,
+    valid_move(Valid),
+    (Valid = 1 -> move(GameState, Move, NewGameState), !; NewGameState = GameState),
     game_cycle(NewGameState).
 
 play :-

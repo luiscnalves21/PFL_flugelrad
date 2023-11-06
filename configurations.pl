@@ -67,10 +67,12 @@ choose_player(Player) :-
   format('\n~a starts first!\n', [Name1]).
 
 choose_move([_, Player], [Hexagon, Rotation]) :-
-  write('\nChoose an hexagon to play: \n'),
+  last_move(LastHexagon),
+  (LastHexagon = 0 -> write('\nChoose a hexagon to play: \n'); format('\nChoose a hexagon to play except ~d: \n', LastHexagon)),
   get_option(1, 7, 'Hexagon', Hexagon), !,
   write('How many times do you want to rotate it? \n'),
-  get_option(1, 5, 'Rotation', Rotation), !.
+  get_option(1, 5, 'Rotation', Rotation), !,
+  validate_move(Hexagon), !.
 
 move([Board, Player], [Hexagon, Rotation], NewGameState) :-
   hexagon(Hexagon, Vertices),
@@ -79,6 +81,10 @@ move([Board, Player], [Hexagon, Rotation], NewGameState) :-
   hexagon(Hexagon, NewVertices),
   board(NewBoard),
   NewGameState = [NewBoard, NewPlayer].
+
+validate_move(Hexagon) :-
+  last_move(LastHexagon),
+  (Hexagon = LastHexagon -> asserta(valid_move(0)); asserta(last_move(Hexagon)), asserta(valid_move(1))).
 
 last_vertice([X], X) :- !.
 
@@ -108,7 +114,9 @@ rotate_hexagon(S, [H|T]) :-
 % Prints a message declaring whose turn it is
 print_turn([_, Player]):-
   name_of(Player, Name),
-  format('\n~a, is your turn!\n', [Name]), !.
+  format('\n~a, is your turn!\n', [Name]), !,
+  valid_move(Valid),
+  (Valid = 0 -> write('\nA hexagon can\'t be played twice in a row!\n'); true), !.
 
 % set_mode/1
 % Game mode choice

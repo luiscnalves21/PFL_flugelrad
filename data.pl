@@ -2,6 +2,8 @@
 :- dynamic color_of/2.
 :- dynamic difficulty/2.
 :- dynamic vertice/3.
+:- dynamic last_move/1.
+:- dynamic valid_move/1.
 
 % board(+Matrix)
 % Matrix is a 7x13 matrix representing the board.
@@ -102,3 +104,7 @@ color(g, 2).
 
 other_color(1, 2).
 other_color(2, 1).
+
+last_move(0).
+
+valid_move(1).
