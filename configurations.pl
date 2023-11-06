@@ -13,7 +13,6 @@ option(2, Player):-
   write('\nHuman vs Bot\n\n'),
   get_name(player_1),
   asserta((name_of(player_2, 'Bot'))), !, 
-  choose_difficulty(player_2),
   choose_color,
   choose_player(Player).
 
@@ -21,10 +20,8 @@ option(3, Player):-
   write('\nBot vs Bot\n\n'),
   asserta((name_of(player_1, 'Bot_1'))),
   asserta((name_of(player_2, 'Bot_2'))), !,
-  choose_difficulty(player_1),
-  choose_difficulty(player_2),
-  asserta((color_of(player_1, blue))),
-  asserta((color_of(player_2, green))),
+  asserta((color_of(player_1, b))),
+  asserta((color_of(player_2, g))),
   format('\n~a, you are the ~a marbles!\n', ['Bot_1', blue]),
   format('~a, you are the ~a marbles!\n', ['Bot_2', green]),
   format('\n~a starts first!\n', ['Bot_1']),
@@ -66,7 +63,7 @@ choose_player(Player) :-
   name_of(Player, Name1),
   format('\n~a starts first!\n', [Name1]).
 
-choose_move([_, Player], [Hexagon, Rotation]) :-
+choose_move(_, [Hexagon, Rotation]) :-
   last_move(LastHexagon),
   (LastHexagon = 0 -> write('\nChoose a hexagon to play: \n'); format('\nChoose a hexagon to play except ~d: \n', LastHexagon)),
   get_option(1, 7, 'Hexagon', Hexagon), !,
@@ -74,11 +71,10 @@ choose_move([_, Player], [Hexagon, Rotation]) :-
   get_option(1, 5, 'Rotation', Rotation), !,
   validate_move(Hexagon), !.
 
-move([Board, Player], [Hexagon, Rotation], NewGameState) :-
+move([_, Player], [Hexagon, Rotation], NewGameState) :-
   hexagon(Hexagon, Vertices),
   rotate_vertices(Vertices, Rotation),
   other_player(Player, NewPlayer),
-  hexagon(Hexagon, NewVertices),
   board(NewBoard),
   NewGameState = [NewBoard, NewPlayer].
 
@@ -96,18 +92,18 @@ rotate_vertices(_, 0) :- !.
 rotate_vertices(Vertices, Rotation) :-
   Rotation1 is Rotation - 1,
   [H|T] = Vertices,
-  vertice(H, V, N),
+  vertice(H, V, N, Visited),
   last_vertice(Vertices, Last),
-  vertice(Last, NewValue, _),
-  asserta((vertice(H, NewValue, N))),
+  vertice(Last, NewValue, _, _),
+  asserta((vertice(H, NewValue, N, Visited))),
   rotate_hexagon(V, T),
   rotate_vertices(Vertices, Rotation1).
 
 rotate_hexagon(_, []) :- !.
 
 rotate_hexagon(S, [H|T]) :-
-  vertice(H, V, N),
-  asserta((vertice(H, S, N))),
+  vertice(H, V, N, Visited),
+  asserta((vertice(H, S, N, Visited))),
   rotate_hexagon(V, T).
 
 % print_turn(+GameState)
@@ -117,6 +113,80 @@ print_turn([_, Player]):-
   format('\n~a, is your turn!\n', [Name]), !,
   valid_move(Valid),
   (Valid = 0 -> write('\nA hexagon can\'t be played twice in a row!\n'); true), !.
+
+dfs(N, _) :-
+  vertice(N, _, _, Visited),
+  Visited = true, !.
+
+dfs(N, Player) :-
+  vertice(N, Value, Adjacent, _),
+  retract((vertice(N, _, _, _))),
+  asserta((vertice(N, Value, Adjacent, true))),
+  color_of(Player, Color),
+  (Value = Color -> counter(Player, Counter), 
+    NewCounter is Counter + 1, 
+    retract(counter(Player, Counter)), 
+    asserta(counter(Player, NewCounter)), dfs_adjacent(Adjacent, Player), !; !
+  ).
+
+dfs_adjacent([], _) :- !.
+
+dfs_adjacent([H|T], Player) :-
+  dfs(H, Player),
+  dfs_adjacent(T, Player).
+
+dfs_vertices(0, Player, Winner) :- 
+  counter(Player, Counter),
+  (Counter >= 6 -> Winner = Player, asserta(game_over_bool(1)), !;
+  retract(counter(Player, _)),
+  asserta(counter(Player, 0))
+  ), !.
+
+dfs_vertices(N, Player, Winner) :-
+  counter(Player, Counter),
+  (Counter >= 6 -> Winner = Player, asserta(game_over_bool(1)), !; 
+    retract(counter(Player, _)),
+    asserta(counter(Player, 0)),
+    setNotVisited(30),
+    vertice(N, V, _, _),
+    (V = e -> !;
+      dfs(N, Player)
+    ),
+    N1 is N - 1,
+    dfs_vertices(N1, Player, Winner)
+  ),
+  !.
+
+setNotVisited(0) :- !.
+
+setNotVisited(N) :-
+  vertice(N, V, A, _),
+  retract((vertice(N, _, _, _))),
+  asserta((vertice(N, V, A, false))),
+  N1 is N - 1,
+  setNotVisited(N1).
+
+game_over(Winner) :-
+  dfs_vertices(30, player_1, Winner),
+  dfs_vertices(30, player_2, Winner).
+
+display_game([Board|_]) :-
+  clear_console,
+  display_board(Board).
+
+show_winner(Winner) :-
+  name_of(Winner, Name),
+  format('\nThe winner is ~a!\n', [Name]), !.
+
+game_cycle(GameState) :-
+  display_game(GameState),
+  print_turn(GameState),
+  choose_move(GameState, Move),
+  valid_move(Valid),
+  (Valid = 1 -> move(GameState, Move, NewGameState), !; NewGameState = GameState),
+  game_over(Winner),
+  game_over_bool(IsOver),
+  (IsOver = 1 -> display_game(GameState), show_winner(Winner), !; game_cycle(NewGameState)), !.
 
 % set_mode/1
 % Game mode choice

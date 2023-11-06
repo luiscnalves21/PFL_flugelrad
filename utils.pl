@@ -4,12 +4,21 @@ init_random_state :-
   now(X),
   setrand(X).
 
-choose_difficulty(Bot) :-
-  format('\nPlease select ~a difficulty:\n', [Bot]),
-  write('1 - Easy\n'),
-  write('2 - Hard\n'),
-  get_option(1, 2, 'Difficulty', Option), !,
-  asserta((difficulty(Bot, Option))).
+% clear_console/0
+% Clears console
+clear_console:- 
+  write('\33\[2J'). 
+
+% clear_data/0
+% removes all name_of, color_of, vertice, last_move and valid_move from the fact base for the next game
+clear_data :-
+  retractall(name_of(_, _)),
+  retractall(color_of(_, _)),
+  retractall(vertice(_, _, _, _)),
+  retractall(last_move(_)),
+  retractall(valid_move(_)),
+  retractall(counter(_,_)),
+  retractall(game_over_bool(_)).
 
 get_line(Result, Acc):-
   get_char(Char),
